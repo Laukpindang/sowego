@@ -1,66 +1,150 @@
-import { useForm } from 'react-hook-form'
-import z from 'zod'
-import { zodResolver } from '@hookform/resolvers/zod'
+import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router'
+import {
+  useReactTable,
+  getCoreRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  getFilteredRowModel,
+  flexRender,
+  type ColumnDef,
+  type SortingState,
+  type ColumnFiltersState
+} from '@tanstack/react-table'
+
+import { getUsers } from '@/firebase/services/user'
+import { useAuth } from '@/context/auth-context'
 
 import { Link } from 'react-router'
 
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import { Input } from './components/ui/input'
 import { Button } from '@/components/ui/button'
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
-import { Input } from '@/components/ui/input'
 
-const schema = z.object({
-  name: z.string().min(3).max(100),
-  email: z.string().email()
-})
+import { ArrowUpDown } from 'lucide-react'
 
-type Schema = z.infer<typeof schema>
+import type { User } from './types/User'
+
+const columns: ColumnDef<User>[] = [
+  {
+    accessorKey: 'username',
+    header: ({ column }) => (
+      <Button variant='ghost' onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
+        Username
+        <ArrowUpDown className='ml-2 h-4 w-4' />
+      </Button>
+    )
+  },
+  {
+    accessorKey: 'email',
+    header: ({ column }) => (
+      <Button variant='ghost' onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
+        Email
+        <ArrowUpDown className='ml-2 h-4 w-4' />
+      </Button>
+    )
+  },
+  {
+    accessorKey: 'id',
+    header: 'Action',
+    cell: ({ row }) => {
+      const navigate = useNavigate()
+      return <Button onClick={() => navigate(`/user/${row.original.id}`)}>Detail</Button>
+    }
+  }
+]
 
 function App() {
-  const form = useForm<Schema>({ resolver: zodResolver(schema) })
+  const { user } = useAuth()
 
-  const submit = (data: Schema) => {
-    console.log(data)
-  }
+  const [userData, setUserData] = useState<User[]>([])
+  const [sorting, setSorting] = useState<SortingState>([])
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
+
+  const table = useReactTable({
+    columns,
+    data: userData,
+    getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    onSortingChange: setSorting,
+    getFilteredRowModel: getFilteredRowModel(),
+    onColumnFiltersChange: setColumnFilters,
+    state: { sorting, columnFilters }
+  })
+
+  useEffect(() => {
+    getUsers().then(res => setUserData(res))
+  }, [])
 
   return (
     <>
       <h1 className='text-xl'>Hello</h1>
-      <Button asChild>
-        <Link to='/login'>Login</Link>
-      </Button>
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(submit)}>
-          <FormField
-            control={form.control}
-            name='name'
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Username</FormLabel>
-                <FormControl>
-                  <Input {...field} />
-                </FormControl>
-                <FormDescription>This is your public display name.</FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name='email'
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Email</FormLabel>
-                <FormControl>
-                  <Input type='email' {...field} />
-                </FormControl>
-                <FormDescription>This is your email.</FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <Button type='submit'>Submit</Button>
-        </form>
-      </Form>
+      {user ? (
+        <div>
+          <div className='flex items-center py-4'>
+            <Input
+              placeholder='Filter emails...'
+              value={(table.getColumn('email')?.getFilterValue() as string) ?? ''}
+              onChange={event => table.getColumn('email')?.setFilterValue(event.target.value)}
+              className='max-w-sm'
+            />
+          </div>
+          <div className='rounded-md border'>
+            <Table>
+              <TableHeader>
+                {table.getHeaderGroups().map(headerGroup => (
+                  <TableRow key={headerGroup.id}>
+                    {headerGroup.headers.map(header => {
+                      return (
+                        <TableHead key={header.id}>
+                          {header.isPlaceholder
+                            ? null
+                            : flexRender(header.column.columnDef.header, header.getContext())}
+                        </TableHead>
+                      )
+                    })}
+                  </TableRow>
+                ))}
+              </TableHeader>
+              <TableBody>
+                {table.getRowModel().rows?.length ? (
+                  table.getRowModel().rows.map(row => (
+                    <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'}>
+                      {row.getVisibleCells().map(cell => (
+                        <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
+                      ))}
+                    </TableRow>
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell colSpan={columns.length} className='h-24 text-center'>
+                      No results.
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </div>
+          <div className='flex items-center justify-end space-x-2 py-4'>
+            <Button
+              variant='outline'
+              size='sm'
+              onClick={() => table.previousPage()}
+              disabled={!table.getCanPreviousPage()}
+            >
+              Previous
+            </Button>
+            <Button variant='outline' size='sm' onClick={() => table.nextPage()} disabled={!table.getCanNextPage()}>
+              Next
+            </Button>
+          </div>
+        </div>
+      ) : (
+        <Button asChild>
+          <Link to='/login'>Login</Link>
+        </Button>
+      )}
     </>
   )
 }

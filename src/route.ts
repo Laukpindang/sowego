@@ -4,6 +4,7 @@ import Root from './Root'
 import App from './App'
 import Login from './pages/login'
 import UserPage from './pages/user'
+import UserDetail from './pages/user/[id]'
 
 const router = createBrowserRouter([
   {
@@ -20,7 +21,16 @@ const router = createBrowserRouter([
       },
       {
         path: 'user',
-        Component: UserPage
+        children: [
+          {
+            index: true,
+            Component: UserPage
+          },
+          {
+            path: ':id',
+            Component: UserDetail
+          }
+        ]
       }
     ]
   }
