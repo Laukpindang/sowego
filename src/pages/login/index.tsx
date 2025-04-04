@@ -37,13 +37,16 @@ const Login = () => {
     toast.promise(login(data.email, data.password), {
       loading: 'Loggin in...',
       success: data => {
-        setUser({ email: data.user.email as string, id: data.user.uid, username: data.user.displayName ?? '' })
+        setUser({
+          email: data.user.email as string,
+          id: data.user.uid,
+          username: data.user.displayName ?? '',
+          photo: data.user.photoURL ?? ''
+        })
+        navigate('/', { replace: true })
         return `Welcome back ${data.user.displayName ? data.user.displayName : ''}`
       },
-      error: 'Login failed',
-      finally: () => {
-        navigate('/', { replace: true })
-      }
+      error: 'Login failed'
     })
   }
 

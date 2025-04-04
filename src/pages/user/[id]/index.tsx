@@ -3,25 +3,48 @@ import { useParams } from 'react-router'
 
 import { getUserById } from '@/firebase/services/user'
 
+import { Link } from 'react-router'
+
+import { Skeleton } from '@/components/ui/skeleton'
+import { Button } from '@/components/ui/button'
+
+import { ArrowLeftIcon } from 'lucide-react'
+
 import type { User } from '@/types/User'
 
 const UserDetail = () => {
   const [userDetail, setUserDetail] = useState<User | null>(null)
+  const [loading, setLoading] = useState(false)
 
   const params = useParams()
 
   useEffect(() => {
-    getUserById(params.id as string).then(res => setUserDetail(res.data() as User))
+    setLoading(true)
+    getUserById(params.id as string).then(res => {
+      setUserDetail(res.data() as User)
+      setLoading(false)
+    })
   }, [params])
 
+  if (loading) return <Skeleton />
+  if (!userDetail) return 'Error'
+
   return (
-    <div>
-      <h1>UserDetail</h1>
+    <div className='flex gap-4 flex-col'>
+      <div className='flex justify-between gap-2 items-center'>
+        <div className='text-xl flex gap-2 items-center'>
+          <ArrowLeftIcon />
+          Detail User
+        </div>
+        <Button asChild>
+          <Link to={`/user/${params.id}/edit`}>Edit</Link>
+        </Button>
+      </div>
       <div className='grid grid-cols-2'>
         <p>Name</p>
-        <p>{userDetail?.username}</p>
+        <p>{userDetail.username}</p>
         <p>Email</p>
-        <p>{userDetail?.email}</p>
+        <p>{userDetail.email}</p>
       </div>
     </div>
   )

@@ -8,12 +8,14 @@ type AuthProviderProps = {
 
 type AuthProviderState = {
   user: User | null
-  setUser: (user: User | null) => void
+  setUser: (user: User) => void
+  logout: () => void
 }
 
 const initialState: AuthProviderState = {
   user: null,
-  setUser: () => null
+  setUser: () => null,
+  logout: () => null
 }
 
 const AuthProviderContext = createContext<AuthProviderState>(initialState)
@@ -31,9 +33,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   const value = {
     user,
-    setUser: (user: User | null) => {
+    setUser: (user: User) => {
       localStorage.setItem('user-vite', JSON.stringify(user))
       setUser(user)
+    },
+    logout: () => {
+      localStorage.removeItem('user-vite')
+      setUser(null)
     }
   }
 

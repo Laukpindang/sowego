@@ -9,19 +9,28 @@ import {
   flexRender,
   type ColumnDef,
   type SortingState,
-  type ColumnFiltersState
+  type ColumnFiltersState,
+  type PaginationState
 } from '@tanstack/react-table'
 
 import { getUsers } from '@/firebase/services/user'
 import { useAuth } from '@/context/auth-context'
+import { usePagination } from './hooks/use-pagination'
 
 import { Link } from 'react-router'
 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Input } from './components/ui/input'
 import { Button } from '@/components/ui/button'
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink
+} from './components/ui/pagination'
 
-import { ArrowUpDown } from 'lucide-react'
+import { ArrowUpDown, ChevronsLeftIcon, ChevronLeftIcon, ChevronRightIcon, ChevronsRightIcon } from 'lucide-react'
 
 import type { User } from './types/User'
 
@@ -60,18 +69,22 @@ function App() {
   const [userData, setUserData] = useState<User[]>([])
   const [sorting, setSorting] = useState<SortingState>([])
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
+  const [pagination, setPagination] = useState<PaginationState>({ pageIndex: 0, pageSize: 10 })
 
   const table = useReactTable({
     columns,
     data: userData,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
+    onPaginationChange: setPagination,
     getSortedRowModel: getSortedRowModel(),
     onSortingChange: setSorting,
     getFilteredRowModel: getFilteredRowModel(),
     onColumnFiltersChange: setColumnFilters,
-    state: { sorting, columnFilters }
+    state: { sorting, columnFilters, pagination }
   })
+
+  const { paginationRange } = usePagination({ itemsPerPage: pagination.pageSize, totalItems: table.getRowCount() })
 
   useEffect(() => {
     getUsers().then(res => setUserData(res))
@@ -79,16 +92,18 @@ function App() {
 
   return (
     <>
-      <h1 className='text-xl'>Hello</h1>
       {user ? (
         <div>
-          <div className='flex items-center py-4'>
+          <div className='flex items-center justify-between py-4 gap-2'>
             <Input
-              placeholder='Filter emails...'
+              placeholder='Filter by Emails...'
               value={(table.getColumn('email')?.getFilterValue() as string) ?? ''}
               onChange={event => table.getColumn('email')?.setFilterValue(event.target.value)}
               className='max-w-sm'
             />
+            <Button asChild>
+              <Link to='/user/add'>Add user</Link>
+            </Button>
           </div>
           <div className='rounded-md border'>
             <Table>
@@ -126,19 +141,64 @@ function App() {
               </TableBody>
             </Table>
           </div>
-          <div className='flex items-center justify-end space-x-2 py-4'>
-            <Button
-              variant='outline'
-              size='sm'
-              onClick={() => table.previousPage()}
-              disabled={!table.getCanPreviousPage()}
-            >
-              Previous
-            </Button>
-            <Button variant='outline' size='sm' onClick={() => table.nextPage()} disabled={!table.getCanNextPage()}>
-              Next
-            </Button>
-          </div>
+          {userData.length > 10 && (
+            <div className='flex items-center justify-between space-x-2 py-4'>
+              <Pagination>
+                <PaginationContent>
+                  <PaginationItem>
+                    <Button
+                      variant='outline'
+                      size='sm'
+                      onClick={() => table.firstPage()}
+                      disabled={!table.getCanPreviousPage()}
+                    >
+                      <ChevronsLeftIcon />
+                    </Button>
+                  </PaginationItem>
+                  <PaginationItem>
+                    <Button
+                      variant='outline'
+                      size='sm'
+                      onClick={() => table.previousPage()}
+                      disabled={!table.getCanPreviousPage()}
+                    >
+                      <ChevronLeftIcon />
+                    </Button>
+                  </PaginationItem>
+                  {paginationRange.map((item, index) => (
+                    <PaginationItem key={`${item}-${index}`}>
+                      <PaginationLink isActive={typeof item === 'number' && pagination.pageIndex === item - 1}>
+                        {item}
+                      </PaginationLink>
+                    </PaginationItem>
+                  ))}
+                  <PaginationItem>
+                    <PaginationEllipsis />
+                  </PaginationItem>
+                  <PaginationItem>
+                    <Button
+                      variant='outline'
+                      size='sm'
+                      onClick={() => table.nextPage()}
+                      disabled={!table.getCanNextPage()}
+                    >
+                      <ChevronRightIcon />
+                    </Button>
+                  </PaginationItem>
+                  <PaginationItem>
+                    <Button
+                      variant='outline'
+                      size='sm'
+                      onClick={() => table.lastPage()}
+                      disabled={!table.getCanNextPage()}
+                    >
+                      <ChevronsRightIcon />
+                    </Button>
+                  </PaginationItem>
+                </PaginationContent>
+              </Pagination>
+            </div>
+          )}
         </div>
       ) : (
         <Button asChild>

@@ -1,4 +1,4 @@
-import { getFirestore, getDocs, getDoc, collection, doc, addDoc } from 'firebase/firestore'
+import { getFirestore, getDocs, getDoc, collection, doc, addDoc, updateDoc } from 'firebase/firestore'
 
 import app from '@/firebase/config'
 
@@ -32,10 +32,17 @@ export const getUserById = async (id: string) => {
   }
 }
 
-export const createUser = async (data: Omit<User, 'id'>) => {
+export const createUser = async (data: Omit<User, 'id' | 'photo'>) => {
   try {
-    const docRef = await addDoc(collection(db, 'user'), data)
-    console.log('Success create user with ID: ', docRef.id)
+    await addDoc(collection(db, 'user'), data)
+  } catch (error) {
+    throw new Error(JSON.stringify(error, null, 2))
+  }
+}
+
+export const editUser = async (id: string, data: Omit<User, 'id' | 'photo'>) => {
+  try {
+    await updateDoc(doc(db, 'user', id), data)
   } catch (error) {
     throw new Error(JSON.stringify(error, null, 2))
   }

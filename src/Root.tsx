@@ -4,16 +4,25 @@ import { AuthProvider } from './context/auth-context'
 import { ThemeProvider } from '@/context/theme-context'
 
 import { Toaster } from '@/components/ui/sonner'
-import { ModeToggle } from './components/mode-toggle'
+import { AppSidebar } from './components/app-sidebar'
+import { SidebarInset, SidebarProvider } from './components/ui/sidebar'
+import Header from './components/header'
 
 const Root = () => {
   return (
     <>
       <AuthProvider>
         <ThemeProvider>
-          <ModeToggle />
           <Toaster position='top-right' richColors />
-          <Outlet />
+          <SidebarProvider>
+            <AppSidebar />
+            <SidebarInset>
+              <Header />
+              <div className='p-4'>
+                <Outlet />
+              </div>
+            </SidebarInset>
+          </SidebarProvider>
         </ThemeProvider>
       </AuthProvider>
     </>
