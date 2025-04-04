@@ -30,9 +30,9 @@ const UserDetail = () => {
   if (!userDetail) return 'Error'
 
   return (
-    <div className='flex gap-4 flex-col'>
-      <div className='flex justify-between gap-2 items-center'>
-        <div className='text-xl flex gap-2 items-center'>
+    <div className='flex flex-col gap-4'>
+      <div className='flex items-center justify-between gap-2'>
+        <div className='flex items-center gap-2 text-xl'>
           <ArrowLeftIcon />
           Detail User
         </div>

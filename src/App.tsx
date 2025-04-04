@@ -94,7 +94,7 @@ function App() {
     <>
       {user ? (
         <div>
-          <div className='flex items-center justify-between py-4 gap-2'>
+          <div className='flex items-center justify-between gap-2 py-4'>
             <Input
               placeholder='Filter by Emails...'
               value={(table.getColumn('email')?.getFilterValue() as string) ?? ''}
