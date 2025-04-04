@@ -1,14 +1,14 @@
 import { createContext, useContext, useEffect, useState } from 'react'
 
-import { User } from '@/types/User'
+import { UserContext } from '@/types/User'
 
 type AuthProviderProps = {
   children: React.ReactNode
 }
 
 type AuthProviderState = {
-  user: User | null
-  setUser: (user: User) => void
+  user: UserContext | null
+  setUser: (user: UserContext) => void
   logout: () => void
 }
 
@@ -21,7 +21,7 @@ const initialState: AuthProviderState = {
 const AuthProviderContext = createContext<AuthProviderState>(initialState)
 
 export function AuthProvider({ children }: AuthProviderProps) {
-  const [user, setUser] = useState<User | null>(null)
+  const [user, setUser] = useState<UserContext | null>(null)
 
   useEffect(() => {
     const stored = localStorage.getItem('user-vite')
@@ -33,7 +33,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   const value = {
     user,
-    setUser: (user: User) => {
+    setUser: (user: UserContext) => {
       localStorage.setItem('user-vite', JSON.stringify(user))
       setUser(user)
     },

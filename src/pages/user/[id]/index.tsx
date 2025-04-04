@@ -42,9 +42,9 @@ const UserDetail = () => {
       </div>
       <div className='grid grid-cols-2'>
         <p>Name</p>
-        <p>{userDetail.username}</p>
+        <p>{userDetail.name}</p>
         <p>Email</p>
-        <p>{userDetail.email}</p>
+        <p>{userDetail.phone_number}</p>
       </div>
     </div>
   )

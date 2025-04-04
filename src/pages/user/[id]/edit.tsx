@@ -15,8 +15,8 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { ArrowLeftIcon } from 'lucide-react'
 
 const schema = z.object({
-  email: z.string().email(),
-  username: z.string().min(3).max(50)
+  name: z.string().min(3).max(50),
+  phone_number: z.string().min(10)
 })
 
 type Schema = z.infer<typeof schema>
@@ -27,8 +27,8 @@ const EditUserPage = () => {
   const form = useForm<Schema>({
     resolver: zodResolver(schema),
     defaultValues: {
-      email: '',
-      username: ''
+      name: '',
+      phone_number: ''
     }
   })
 
@@ -49,8 +49,8 @@ const EditUserPage = () => {
   useEffect(() => {
     setLoading(true)
     getUserById(params.id as string).then(res => {
-      form.setValue('email', res.data()!.email ?? '')
-      form.setValue('username', res.data()!.username ?? '')
+      form.setValue('name', res.data()!.name ?? '')
+      form.setValue('phone_number', res.data()!.phone_number ?? '')
       setLoading(false)
     })
   }, [params])
@@ -67,12 +67,12 @@ const EditUserPage = () => {
         <form onSubmit={form.handleSubmit(submit)} className='flex flex-col gap-2'>
           <FormField
             control={form.control}
-            name='email'
+            name='name'
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Email</FormLabel>
+                <FormLabel>Name</FormLabel>
                 <FormControl>
-                  <Input type='email' {...field} />
+                  <Input {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -80,10 +80,10 @@ const EditUserPage = () => {
           />
           <FormField
             control={form.control}
-            name='username'
+            name='phone_number'
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Username</FormLabel>
+                <FormLabel>Phone Number</FormLabel>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>

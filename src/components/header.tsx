@@ -1,12 +1,19 @@
 import { SidebarTrigger } from './ui/sidebar'
-import { ModeToggle } from './mode-toggle'
+import { HeaderUser } from './header-user'
 
-const Header = () => {
+interface Props {
+  title: string
+}
+
+const Header = ({ title }: Props) => {
   return (
-    <header className='flex h-16 shrink-0 items-center gap-2 border-b px-4'>
-      <SidebarTrigger className='-ml-1' />
-      <div className='flex grow flex-col items-end'>
-        <ModeToggle />
+    <header className='flex h-16 shrink-0 items-center justify-between gap-2 border-b px-4'>
+      <div className='flex items-center gap-2'>
+        <SidebarTrigger className='-ml-1' />
+        <p>{title}</p>
+      </div>
+      <div className='flex flex-col items-end'>
+        <HeaderUser />
       </div>
     </header>
   )

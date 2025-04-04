@@ -13,8 +13,8 @@ export const getUsers = async () => {
     res.forEach(doc => {
       users.push({
         id: doc.id,
-        email: doc.data().email,
-        username: doc.data().username
+        name: doc.data().name,
+        phone_number: doc.data().phone_number
       })
     })
     return users
@@ -32,7 +32,7 @@ export const getUserById = async (id: string) => {
   }
 }
 
-export const createUser = async (data: Omit<User, 'id' | 'photo'>) => {
+export const createUser = async (data: Omit<User, 'id'>) => {
   try {
     await addDoc(collection(db, 'user'), data)
   } catch (error) {
@@ -40,7 +40,7 @@ export const createUser = async (data: Omit<User, 'id' | 'photo'>) => {
   }
 }
 
-export const editUser = async (id: string, data: Omit<User, 'id' | 'photo'>) => {
+export const editUser = async (id: string, data: Omit<User, 'id'>) => {
   try {
     await updateDoc(doc(db, 'user', id), data)
   } catch (error) {
