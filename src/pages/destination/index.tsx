@@ -94,7 +94,7 @@ const columns: ColumnDef<Destination>[] = [
     header: 'Action',
     cell: ({ row }) => {
       const navigate = useNavigate()
-      return <Button onClick={() => navigate(`/user/${row.original.id}`)}>Detail</Button>
+      return <Button onClick={() => navigate(`/destination/${row.original.id}/edit`)}>Edit</Button>
     }
   }
 ]

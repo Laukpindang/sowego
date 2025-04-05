@@ -13,8 +13,8 @@ import { Button } from '@/components/ui/button'
 import { ArrowLeftIcon } from 'lucide-react'
 
 const schema = z.object({
-  email: z.string().email(),
-  username: z.string().min(3).max(50)
+  name: z.string().min(3).max(50),
+  phone_number: z.string().min(10)
 })
 
 type Schema = z.infer<typeof schema>
@@ -23,8 +23,8 @@ const AddUserPage = () => {
   const form = useForm<Schema>({
     resolver: zodResolver(schema),
     defaultValues: {
-      email: '',
-      username: ''
+      name: '',
+      phone_number: ''
     }
   })
 
@@ -51,12 +51,12 @@ const AddUserPage = () => {
         <form onSubmit={form.handleSubmit(submit)} className='flex flex-col gap-2'>
           <FormField
             control={form.control}
-            name='email'
+            name='name'
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Email</FormLabel>
+                <FormLabel>Name</FormLabel>
                 <FormControl>
-                  <Input type='email' {...field} />
+                  <Input {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -64,10 +64,10 @@ const AddUserPage = () => {
           />
           <FormField
             control={form.control}
-            name='username'
+            name='phone_number'
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Username</FormLabel>
+                <FormLabel>Phone Number</FormLabel>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>
