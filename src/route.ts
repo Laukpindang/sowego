@@ -25,6 +25,9 @@ import AddUserPage from './pages/user/add'
 import EditUserPage from './pages/user/[id]/edit'
 
 // Booking
+import BookingPage from './pages/booking'
+import AddBookingPage from './pages/booking/add'
+import EditBookingPage from './pages/booking/[id]/edit'
 
 const router = createBrowserRouter([
   {
@@ -90,6 +93,24 @@ const router = createBrowserRouter([
               {
                 path: ':id/edit',
                 Component: EditUserPage
+              }
+            ]
+          },
+          // Booking
+          {
+            path: 'booking',
+            children: [
+              {
+                index: true,
+                Component: BookingPage
+              },
+              {
+                path: 'add',
+                Component: AddBookingPage
+              },
+              {
+                path: ':id/edit',
+                Component: EditBookingPage
               }
             ]
           }
