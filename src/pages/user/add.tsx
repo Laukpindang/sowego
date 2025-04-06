@@ -34,7 +34,7 @@ const AddUserPage = () => {
     toast.promise(createUser(data), {
       loading: 'Creating user...',
       success: () => {
-        navigate('/')
+        navigate('/user')
         return 'Add user success'
       },
       error: 'Add user failed'
@@ -44,7 +44,7 @@ const AddUserPage = () => {
   return (
     <div className='flex flex-col gap-4'>
       <div className='flex items-center gap-2 text-xl'>
-        <ArrowLeftIcon />
+        <ArrowLeftIcon onClick={() => navigate('/user')} />
         Add User
       </div>
       <Form {...form}>

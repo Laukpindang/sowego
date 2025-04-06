@@ -5,7 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { toast } from 'sonner'
 import { useNavigate, useParams } from 'react-router'
 
-import { editDestination, getDestinationById } from '@/firebase/services/destination'
+import { editVacation, getVacationById } from '@/firebase/services/vacation'
 
 import Header from '@/components/header'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
@@ -18,7 +18,7 @@ import { ArrowLeftIcon } from 'lucide-react'
 const schema = z.object({
   city: z.string().min(1),
   price: z.string().min(1),
-  discount: z.string().min(1),
+  day_trip: z.string().min(1),
   country: z.string().min(1),
   rating: z.string().min(0).max(5),
   quota: z.string().min(1)
@@ -26,7 +26,7 @@ const schema = z.object({
 
 type Schema = z.infer<typeof schema>
 
-const EditDestinationPage = () => {
+const EditVacationPage = () => {
   const [loading, setLoading] = useState(false)
 
   const form = useForm<Schema>({
@@ -34,7 +34,7 @@ const EditDestinationPage = () => {
     defaultValues: {
       city: '',
       price: '',
-      discount: '',
+      day_trip: '',
       country: '',
       rating: '',
       quota: ''
@@ -46,30 +46,30 @@ const EditDestinationPage = () => {
 
   const submit = async (data: Schema) => {
     toast.promise(
-      editDestination(params.id as string, {
+      editVacation(params.id as string, {
         ...data,
-        discount: parseInt(data.discount),
+        day_trip: parseInt(data.day_trip),
         price: parseInt(data.price),
         rating: parseInt(data.rating),
         quota: parseInt(data.quota)
       }),
       {
-        loading: 'Edit destination...',
+        loading: 'Edit vacation...',
         success: () => {
-          navigate('/')
-          return 'Edit destination success'
+          navigate('/vacation')
+          return 'Edit vacation success'
         },
-        error: 'Edit destination failed'
+        error: 'Edit vacation failed'
       }
     )
   }
 
   useEffect(() => {
     setLoading(true)
-    getDestinationById(params.id as string).then(res => {
+    getVacationById(params.id as string).then(res => {
       form.setValue('city', res.data()!.city ?? '')
       form.setValue('price', res.data()!.price.toString() ?? '')
-      form.setValue('discount', res.data()!.discount.toString() ?? '')
+      form.setValue('day_trip', res.data()!.day_trip.toString() ?? '')
       form.setValue('country', res.data()!.country ?? '')
       form.setValue('rating', res.data()!.rating.toString() ?? '')
       form.setValue('quota', res.data()!.quota.toString() ?? '')
@@ -81,11 +81,11 @@ const EditDestinationPage = () => {
 
   return (
     <>
-      <Header title='Edit Destination' />
+      <Header title='Edit Vacation' />
       <div className='flex flex-col gap-4 p-4'>
         <div className='flex items-center gap-2 text-xl'>
-          <ArrowLeftIcon onClick={() => navigate('/')} />
-          Edit Destination
+          <ArrowLeftIcon />
+          Edit Vacation
         </div>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(submit)} className='flex flex-col gap-2'>
@@ -117,10 +117,10 @@ const EditDestinationPage = () => {
             />
             <FormField
               control={form.control}
-              name='discount'
+              name='day_trip'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Discount</FormLabel>
+                  <FormLabel>Day Trip</FormLabel>
                   <FormControl>
                     <Input type='number' {...field} />
                   </FormControl>
@@ -177,4 +177,4 @@ const EditDestinationPage = () => {
   )
 }
 
-export default EditDestinationPage
+export default EditVacationPage

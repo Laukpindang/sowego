@@ -39,7 +39,7 @@ const EditUserPage = () => {
     toast.promise(editUser(params.id as string, data), {
       loading: 'Editing user...',
       success: () => {
-        navigate(`/user/${params.id}`)
+        navigate(`/user`)
         return 'Edit user success'
       },
       error: 'Edit user failed'
@@ -60,7 +60,7 @@ const EditUserPage = () => {
   return (
     <div className='flex flex-col gap-4'>
       <div className='flex items-center gap-2 text-xl'>
-        <ArrowLeftIcon />
+        <ArrowLeftIcon onClick={() => navigate('/user')} />
         Edit User
       </div>
       <Form {...form}>
