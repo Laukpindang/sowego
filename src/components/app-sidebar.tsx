@@ -24,7 +24,7 @@ const data = [
   },
   {
     title: 'Manage Vacation Plan',
-    url: '/booking'
+    url: '/vacation'
   },
   {
     title: 'Manage User',

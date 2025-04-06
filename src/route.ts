@@ -13,11 +13,18 @@ import DestinationPage from './pages/destination'
 import AddDestinationPage from './pages/destination/add'
 import EditDestinationPage from './pages/destination/[id]/edit'
 
+// Vacation
+import VacationPage from './pages/vacation'
+import AddVacationPage from './pages/vacation/add'
+import EditVacationPage from './pages/vacation/[id]/edit'
+
 // User
 import UserPage from './pages/user'
 import UserDetail from './pages/user/[id]'
 import AddUserPage from './pages/user/add'
 import EditUserPage from './pages/user/[id]/edit'
+
+// Booking
 
 const router = createBrowserRouter([
   {
@@ -43,6 +50,24 @@ const router = createBrowserRouter([
               {
                 path: '/destination/:id/edit',
                 Component: EditDestinationPage
+              }
+            ]
+          },
+          // Vacation
+          {
+            path: 'vacation',
+            children: [
+              {
+                index: true,
+                Component: VacationPage
+              },
+              {
+                path: 'add',
+                Component: AddVacationPage
+              },
+              {
+                path: ':id/edit',
+                Component: EditVacationPage
               }
             ]
           },
