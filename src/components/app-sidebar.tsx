@@ -16,7 +16,6 @@ import {
   SidebarRail
 } from '@/components/ui/sidebar'
 
-// This is sample data.
 const data = [
   {
     title: 'Manage Destination',
@@ -65,7 +64,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               <React.Fragment key={item.title}>
                 <SidebarMenuItem>
                   <SidebarMenuButton asChild>
-                    <Link to={item.url}>{item.title}</Link>
+                    <Link to={item.url} onClick={() => setOpenMobile(false)}>
+                      {item.title}
+                    </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               </React.Fragment>
