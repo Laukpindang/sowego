@@ -1,64 +1,89 @@
 import { useMemo, useState } from 'react'
 
-interface UsePaginationProps {
-  totalItems: number
-  itemsPerPage: number
-  siblingCount?: number
+function range(start: number, end: number) {
+  const length = end - start + 1
+  return Array.from({ length }, (_, index) => index + start)
 }
 
-export const usePagination = ({ totalItems, itemsPerPage, siblingCount = 1 }: UsePaginationProps) => {
-  const [currentPage, setCurrentPage] = useState(1)
-  const totalPages = Math.ceil(totalItems / itemsPerPage)
+export const DOTS = 'dots'
 
-  const isFirstPage = currentPage === 1
-  const isLastPage = currentPage === totalPages
+export interface PaginationParams {
+  /** Page selected on initial render, defaults to 1 */
+  initialPage?: number
 
-  const nextPage = () => setCurrentPage(prev => Math.min(prev + 1, totalPages))
-  const prevPage = () => setCurrentPage(prev => Math.max(prev - 1, 1))
-  const goToPage = (page: number) => setCurrentPage(Math.max(1, Math.min(page, totalPages)))
+  /** Controlled active page number */
+  page?: number
 
-  const paginationRange = useMemo(() => {
-    if (totalPages <= 1) return []
+  /** Total amount of pages */
+  total: number
 
-    const totalNumbers = siblingCount * 2 + 3 // First, last, and siblings
-    const totalBlocks = totalNumbers + 2 // Including ellipses
+  /** Siblings amount on left/right side of selected page, defaults to 1 */
+  siblings?: number
 
-    if (totalPages > totalBlocks) {
-      const leftSiblingIndex = Math.max(currentPage - siblingCount, 2)
-      const rightSiblingIndex = Math.min(currentPage + siblingCount, totalPages - 1)
+  /** Amount of elements visible on left/right edges, defaults to 1  */
+  boundaries?: number
 
-      const showLeftEllipsis = leftSiblingIndex > 2
-      const showRightEllipsis = rightSiblingIndex < totalPages - 1
+  /** Callback fired after change of each page */
+  onChange?: (page: number) => void
+}
 
-      const pages: (number | '...')[] = [1]
+export function usePagination({ total, siblings = 1, boundaries = 1, page }: PaginationParams) {
+  const _total = Math.max(Math.trunc(total), 0)
+  const [activePage, setActivePage] = useState(page ?? 1)
 
-      if (showLeftEllipsis) {
-        pages.push('...')
-      }
+  const setPage = (pageNumber: number) => {
+    if (pageNumber <= 0) {
+      setActivePage(1)
+    } else if (pageNumber > _total) {
+      setActivePage(_total)
+    } else {
+      setActivePage(pageNumber)
+    }
+  }
 
-      for (let i = leftSiblingIndex; i <= rightSiblingIndex; i++) {
-        pages.push(i)
-      }
+  const next = () => setPage(activePage + 1)
+  const previous = () => setPage(activePage - 1)
+  const first = () => setPage(1)
+  const last = () => setPage(_total)
 
-      if (showRightEllipsis) {
-        pages.push('...')
-      }
-
-      pages.push(totalPages)
-      return pages
+  const paginationRange = useMemo((): (number | 'dots')[] => {
+    const totalPageNumbers = siblings * 2 + 3 + boundaries * 2
+    if (totalPageNumbers >= _total) {
+      return range(1, _total)
     }
 
-    return Array.from({ length: totalPages }, (_, i) => i + 1)
-  }, [totalPages, currentPage, siblingCount])
+    const leftSiblingIndex = Math.max(activePage - siblings, boundaries)
+    const rightSiblingIndex = Math.min(activePage + siblings, _total - boundaries)
+
+    const shouldShowLeftDots = leftSiblingIndex > boundaries + 2
+    const shouldShowRightDots = rightSiblingIndex < _total - (boundaries + 1)
+
+    if (!shouldShowLeftDots && shouldShowRightDots) {
+      const leftItemCount = siblings * 2 + boundaries + 2
+      return [...range(1, leftItemCount), DOTS, ...range(_total - (boundaries - 1), _total)]
+    }
+
+    if (shouldShowLeftDots && !shouldShowRightDots) {
+      const rightItemCount = boundaries + 1 + 2 * siblings
+      return [...range(1, boundaries), DOTS, ...range(_total - rightItemCount, _total)]
+    }
+
+    return [
+      ...range(1, boundaries),
+      DOTS,
+      ...range(leftSiblingIndex, rightSiblingIndex),
+      DOTS,
+      ...range(_total - boundaries + 1, _total)
+    ]
+  }, [_total, siblings, activePage])
 
   return {
-    currentPage,
-    totalPages,
-    paginationRange,
-    isFirstPage,
-    isLastPage,
-    nextPage,
-    prevPage,
-    goToPage
+    range: paginationRange,
+    active: activePage,
+    setPage,
+    next,
+    previous,
+    first,
+    last
   }
 }

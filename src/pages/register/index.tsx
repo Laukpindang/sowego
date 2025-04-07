@@ -101,7 +101,7 @@ const Register = () => {
               </FormItem>
             )}
           />
-          <Link to='/login' className='text-right'>
+          <Link to='/auth/login' className='text-right'>
             Have an account? Login!
           </Link>
           <Button type='submit'>Register</Button>

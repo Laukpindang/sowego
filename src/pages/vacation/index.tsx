@@ -118,7 +118,7 @@ function VacationPage() {
     state: { sorting, columnFilters, pagination }
   })
 
-  const { paginationRange } = usePagination({ itemsPerPage: pagination.pageSize, totalItems: table.getRowCount() })
+  const { range, first, last, next, previous, setPage, active } = usePagination({ total: table.getPageCount() })
 
   useEffect(() => {
     getVacations().then(res => setVacationData(res))
@@ -181,7 +181,10 @@ function VacationPage() {
                   <Button
                     variant='outline'
                     size='sm'
-                    onClick={() => table.firstPage()}
+                    onClick={() => {
+                      table.firstPage()
+                      first()
+                    }}
                     disabled={!table.getCanPreviousPage()}
                   >
                     <ChevronsLeftIcon />
@@ -191,27 +194,40 @@ function VacationPage() {
                   <Button
                     variant='outline'
                     size='sm'
-                    onClick={() => table.previousPage()}
+                    onClick={() => {
+                      table.previousPage()
+                      previous()
+                    }}
                     disabled={!table.getCanPreviousPage()}
                   >
                     <ChevronLeftIcon />
                   </Button>
                 </PaginationItem>
-                {paginationRange.map((item, index) => (
+                {range.map((item, index) => (
                   <PaginationItem key={`${item}-${index}`}>
-                    <PaginationLink isActive={typeof item === 'number' && pagination.pageIndex === item - 1}>
-                      {item}
-                    </PaginationLink>
+                    {typeof item === 'number' ? (
+                      <PaginationLink
+                        onClick={() => {
+                          table.setPageIndex(item - 1)
+                          setPage(item)
+                        }}
+                        isActive={item === active}
+                      >
+                        {item}
+                      </PaginationLink>
+                    ) : (
+                      <PaginationEllipsis />
+                    )}
                   </PaginationItem>
                 ))}
-                <PaginationItem>
-                  <PaginationEllipsis />
-                </PaginationItem>
                 <PaginationItem>
                   <Button
                     variant='outline'
                     size='sm'
-                    onClick={() => table.nextPage()}
+                    onClick={() => {
+                      table.nextPage()
+                      next()
+                    }}
                     disabled={!table.getCanNextPage()}
                   >
                     <ChevronRightIcon />
@@ -221,7 +237,10 @@ function VacationPage() {
                   <Button
                     variant='outline'
                     size='sm'
-                    onClick={() => table.lastPage()}
+                    onClick={() => {
+                      table.lastPage()
+                      last()
+                    }}
                     disabled={!table.getCanNextPage()}
                   >
                     <ChevronsRightIcon />

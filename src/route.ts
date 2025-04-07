@@ -115,12 +115,12 @@ const router = createBrowserRouter([
       // Login & Register does not have sidebar
       {
         // Login
-        path: 'login',
+        path: 'auth/login',
         Component: Login
       },
       {
         // Register
-        path: 'register',
+        path: 'auth/register',
         Component: Register
       }
     ]

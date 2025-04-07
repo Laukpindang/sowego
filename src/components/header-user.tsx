@@ -63,7 +63,7 @@ export function HeaderUser() {
               onClick={() =>
                 logout().then(() => {
                   authLogout()
-                  navigate('/login', { replace: true })
+                  navigate('/auth/login', { replace: true })
                 })
               }
             >

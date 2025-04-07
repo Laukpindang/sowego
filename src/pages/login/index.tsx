@@ -83,7 +83,7 @@ const Login = () => {
               </FormItem>
             )}
           />
-          <Link to='/register' className='text-right'>
+          <Link to='/auth/register' className='text-right'>
             Doesn't have an account? Register!
           </Link>
           <Button type='submit'>Login</Button>
