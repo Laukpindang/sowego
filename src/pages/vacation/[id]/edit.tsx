@@ -83,7 +83,7 @@ const EditVacationPage = () => {
     <>
       <Header title='Edit Vacation' />
       <div className='flex flex-col gap-4 p-4'>
-        <div className='flex items-center gap-2 text-xl'>
+        <div onClick={() => navigate('/vacation')} className='flex items-center gap-2 text-xl'>
           <ArrowLeftIcon />
           Edit Vacation
         </div>

@@ -7,6 +7,7 @@ import { useNavigate, useParams } from 'react-router'
 
 import { editUser, getUserById } from '@/firebase/services/user'
 
+import Header from '@/components/header'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
@@ -58,45 +59,48 @@ const EditUserPage = () => {
   if (loading) return <Skeleton />
 
   return (
-    <div className='flex flex-col gap-4'>
-      <div className='flex items-center gap-2 text-xl'>
-        <ArrowLeftIcon onClick={() => navigate('/user')} />
-        Edit User
+    <>
+      <Header title='Edit User' />
+      <div className='flex flex-col gap-4 p-4'>
+        <div className='flex items-center gap-2 text-xl'>
+          <ArrowLeftIcon onClick={() => navigate('/user')} />
+          Edit User
+        </div>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(submit)} className='flex flex-col gap-2'>
+            <FormField
+              control={form.control}
+              name='name'
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Name</FormLabel>
+                  <FormControl>
+                    <Input {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name='phone_number'
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Phone Number</FormLabel>
+                  <FormControl>
+                    <Input {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <Button type='submit' className='max-w-16 self-end'>
+              Submit
+            </Button>
+          </form>
+        </Form>
       </div>
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(submit)} className='flex flex-col gap-2'>
-          <FormField
-            control={form.control}
-            name='name'
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Name</FormLabel>
-                <FormControl>
-                  <Input {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name='phone_number'
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Phone Number</FormLabel>
-                <FormControl>
-                  <Input {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <Button type='submit' className='max-w-16 self-end'>
-            Submit
-          </Button>
-        </form>
-      </Form>
-    </div>
+    </>
   )
 }
 
