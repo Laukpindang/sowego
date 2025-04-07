@@ -1,33 +1,33 @@
+import { lazy } from 'react'
 import { createBrowserRouter } from 'react-router'
 
 // Layout
-import MainLayout from './layouts/main-layout'
-import AuthLayout from './layouts/auth-layout'
+const MainLayout = lazy(() => import('./layouts/main-layout'))
+const AuthLayout = lazy(() => import('./layouts/auth-layout'))
 
 // Auth
-import Login from './pages/login'
-import Register from './pages/register'
+const Login = lazy(() => import('./pages/login'))
+const Register = lazy(() => import('./pages/register'))
 
 // Destination
-import DestinationPage from './pages/destination'
-import AddDestinationPage from './pages/destination/add'
-import EditDestinationPage from './pages/destination/[id]/edit'
+const DestinationPage = lazy(() => import('./pages/destination'))
+const AddDestinationPage = lazy(() => import('./pages/destination/add'))
+const EditDestinationPage = lazy(() => import('./pages/destination/[id]/edit'))
 
 // Vacation
-import VacationPage from './pages/vacation'
-import AddVacationPage from './pages/vacation/add'
-import EditVacationPage from './pages/vacation/[id]/edit'
+const VacationPage = lazy(() => import('./pages/vacation'))
+const AddVacationPage = lazy(() => import('./pages/vacation/add'))
+const EditVacationPage = lazy(() => import('./pages/vacation/[id]/edit'))
 
 // User
-import UserPage from './pages/user'
-import UserDetail from './pages/user/[id]'
-import AddUserPage from './pages/user/add'
-import EditUserPage from './pages/user/[id]/edit'
+const UserPage = lazy(() => import('./pages/user'))
+const AddUserPage = lazy(() => import('./pages/user/add'))
+const EditUserPage = lazy(() => import('./pages/user/[id]/edit'))
 
 // Booking
-import BookingPage from './pages/booking'
-import AddBookingPage from './pages/booking/add'
-import EditBookingPage from './pages/booking/[id]/edit'
+const BookingPage = lazy(() => import('./pages/booking'))
+const AddBookingPage = lazy(() => import('./pages/booking/add'))
+const EditBookingPage = lazy(() => import('./pages/booking/[id]/edit'))
 
 const router = createBrowserRouter([
   {
@@ -81,10 +81,6 @@ const router = createBrowserRouter([
               {
                 index: true,
                 Component: UserPage
-              },
-              {
-                path: ':id',
-                Component: UserDetail
               },
               {
                 path: 'add',
