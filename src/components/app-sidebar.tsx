@@ -2,7 +2,6 @@ import * as React from 'react'
 
 import { useSidebar } from '@/components/ui/sidebar'
 
-import { GalleryVerticalEnd } from 'lucide-react'
 import { Link } from 'react-router'
 
 import {
@@ -45,12 +44,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           <SidebarMenuItem>
             <SidebarMenuButton size='lg' asChild>
               <Link to='/' onClick={() => setOpenMobile(false)}>
-                <div className='bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg'>
-                  <GalleryVerticalEnd className='size-4' />
+                <div className='text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg bg-white'>
+                  <img src='/sowego-icon.svg' alt='SOWEGO' />
                 </div>
                 <div className='flex flex-col gap-0.5 leading-none'>
-                  <span className='font-medium'>Documentation</span>
-                  <span className=''>v1.0.0</span>
+                  <span className='font-medium'>SOWEGO</span>
                 </div>
               </Link>
             </SidebarMenuButton>
