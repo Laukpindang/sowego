@@ -56,7 +56,7 @@ const EditDestinationPage = () => {
       {
         loading: 'Edit destination...',
         success: () => {
-          navigate('/')
+          navigate('/destination')
           return 'Edit destination success'
         },
         error: 'Edit destination failed'

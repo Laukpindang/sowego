@@ -51,7 +51,7 @@ const AddDestinationPage = () => {
       {
         loading: 'Creating destination...',
         success: () => {
-          navigate('/')
+          navigate('/destination')
           return 'Add destination success'
         },
         error: 'Add destination failed'

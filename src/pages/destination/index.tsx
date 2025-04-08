@@ -1,5 +1,4 @@
-import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router'
+import { useEffect, useState, useCallback, useMemo } from 'react'
 import {
   useReactTable,
   getCoreRowModel,
@@ -12,8 +11,9 @@ import {
   type ColumnFiltersState,
   type PaginationState
 } from '@tanstack/react-table'
+import { toast } from 'sonner'
 
-import { getDestinations } from '@/firebase/services/destination'
+import { getDestinations, deleteDestination } from '@/firebase/services/destination'
 import { usePagination } from '@/hooks/use-pagination'
 
 import { Link } from 'react-router'
@@ -29,81 +29,122 @@ import {
   PaginationItem,
   PaginationLink
 } from '@/components/ui/pagination'
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger
+} from '@/components/ui/drawer'
 
 import { ArrowUpDown, ChevronsLeftIcon, ChevronLeftIcon, ChevronRightIcon, ChevronsRightIcon } from 'lucide-react'
 
 import type { Destination } from '@/types/Destination'
-
-const columns: ColumnDef<Destination>[] = [
-  {
-    accessorKey: 'city',
-    header: ({ column }) => (
-      <Button variant='ghost' onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
-        City
-        <ArrowUpDown className='ml-2 h-4 w-4' />
-      </Button>
-    )
-  },
-  {
-    accessorKey: 'price',
-    header: ({ column }) => (
-      <Button variant='ghost' onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
-        Price
-        <ArrowUpDown className='ml-2 h-4 w-4' />
-      </Button>
-    )
-  },
-  {
-    accessorKey: 'discount',
-    header: ({ column }) => (
-      <Button variant='ghost' onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
-        Discount
-        <ArrowUpDown className='ml-2 h-4 w-4' />
-      </Button>
-    )
-  },
-  {
-    accessorKey: 'country',
-    header: ({ column }) => (
-      <Button variant='ghost' onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
-        Country
-        <ArrowUpDown className='ml-2 h-4 w-4' />
-      </Button>
-    )
-  },
-  {
-    accessorKey: 'rating',
-    header: ({ column }) => (
-      <Button variant='ghost' onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
-        Rating
-        <ArrowUpDown className='ml-2 h-4 w-4' />
-      </Button>
-    )
-  },
-  {
-    accessorKey: 'quota',
-    header: ({ column }) => (
-      <Button variant='ghost' onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
-        Quota
-        <ArrowUpDown className='ml-2 h-4 w-4' />
-      </Button>
-    )
-  },
-  {
-    accessorKey: 'id',
-    header: 'Action',
-    cell: ({ row }) => {
-      const navigate = useNavigate()
-      return <Button onClick={() => navigate(`/destination/${row.original.id}/edit`)}>Edit</Button>
-    }
-  }
-]
 
 function DestinationPage() {
   const [destinationData, setDestinationData] = useState<Destination[]>([])
   const [sorting, setSorting] = useState<SortingState>([])
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
   const [pagination, setPagination] = useState<PaginationState>({ pageIndex: 0, pageSize: 10 })
+
+  const columns: ColumnDef<Destination>[] = useMemo(
+    () => [
+      {
+        accessorKey: 'city',
+        header: ({ column }) => (
+          <Button variant='ghost' onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
+            City
+            <ArrowUpDown className='ml-2 h-4 w-4' />
+          </Button>
+        )
+      },
+      {
+        accessorKey: 'price',
+        header: ({ column }) => (
+          <Button variant='ghost' onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
+            Price
+            <ArrowUpDown className='ml-2 h-4 w-4' />
+          </Button>
+        )
+      },
+      {
+        accessorKey: 'discount',
+        header: ({ column }) => (
+          <Button variant='ghost' onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
+            Discount
+            <ArrowUpDown className='ml-2 h-4 w-4' />
+          </Button>
+        )
+      },
+      {
+        accessorKey: 'country',
+        header: ({ column }) => (
+          <Button variant='ghost' onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
+            Country
+            <ArrowUpDown className='ml-2 h-4 w-4' />
+          </Button>
+        )
+      },
+      {
+        accessorKey: 'rating',
+        header: ({ column }) => (
+          <Button variant='ghost' onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
+            Rating
+            <ArrowUpDown className='ml-2 h-4 w-4' />
+          </Button>
+        )
+      },
+      {
+        accessorKey: 'quota',
+        header: ({ column }) => (
+          <Button variant='ghost' onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
+            Quota
+            <ArrowUpDown className='ml-2 h-4 w-4' />
+          </Button>
+        )
+      },
+      {
+        accessorKey: 'id',
+        header: 'Action',
+        cell: ({ row }) => {
+          return (
+            <Drawer>
+              <div className='flex items-center gap-2'>
+                <Button asChild>
+                  <Link to={`/destination/${row.original.id}/edit`}>Edit</Link>
+                </Button>
+                <DrawerTrigger asChild>
+                  <Button variant='destructive'>Delete</Button>
+                </DrawerTrigger>
+              </div>
+              <DrawerContent>
+                <div className='mx-auto w-full max-w-sm'>
+                  <DrawerHeader>
+                    <DrawerTitle>Are you sure to delete this destination?</DrawerTitle>
+                    <DrawerDescription>This action cannot be undone</DrawerDescription>
+                  </DrawerHeader>
+                  <DrawerFooter>
+                    <DrawerClose asChild>
+                      <Button variant='destructive' onClick={() => deleteData(row.original.id)}>
+                        Delete
+                      </Button>
+                    </DrawerClose>
+                    <DrawerClose asChild>
+                      <Button variant='outline'>Cancel</Button>
+                    </DrawerClose>
+                  </DrawerFooter>
+                </div>
+              </DrawerContent>
+            </Drawer>
+          )
+        }
+      }
+    ],
+    []
+  )
 
   const table = useReactTable({
     columns,
@@ -120,8 +161,21 @@ function DestinationPage() {
 
   const { range, first, last, next, previous, setPage, active } = usePagination({ total: table.getPageCount() })
 
-  useEffect(() => {
+  const fetchData = useCallback(() => {
     getDestinations().then(res => setDestinationData(res))
+  }, [])
+
+  const deleteData = useCallback(async (id: string) => {
+    toast.promise(() => deleteDestination(id), {
+      loading: 'Deleting data...',
+      success: 'Success delete data',
+      error: 'Failed delete data',
+      finally: () => fetchData()
+    })
+  }, [])
+
+  useEffect(() => {
+    fetchData()
   }, [])
 
   return (
