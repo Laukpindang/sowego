@@ -34,27 +34,41 @@ const Router = () => {
     <Routes>
       <Route element={<MainLayout />}>
         {/* Login */}
+        <Route index element={<Login />} />
         <Route path='auth/login' element={<Login />} />
+
         {/* Register */}
         <Route path='auth/register' element={<Register />} />
+
         {/* Layout with sidebar */}
         <Route element={<AuthLayout />}>
           {/* Destination */}
-          <Route index element={<DestinationPage />} />
-          <Route path='/destination/add' element={<AddDestinationPage />} />
-          <Route path='/destination/:id/edit' element={<EditDestinationPage />} />
+          <Route path='/destination'>
+            <Route index element={<DestinationPage />} />
+            <Route path='add' element={<AddDestinationPage />} />
+            <Route path=':id/edit' element={<EditDestinationPage />} />
+          </Route>
+
           {/* Vacation */}
-          <Route path='/vacation' element={<VacationPage />} />
-          <Route path='/vacation/add' element={<AddVacationPage />} />
-          <Route path='/vacation/:id/edit' element={<EditVacationPage />} />
+          <Route path='/vacation'>
+            <Route index element={<VacationPage />} />
+            <Route path='add' element={<AddVacationPage />} />
+            <Route path=':id/edit' element={<EditVacationPage />} />
+          </Route>
+
           {/* User */}
-          <Route path='/user' element={<UserPage />} />
-          <Route path='/user/add' element={<AddUserPage />} />
-          <Route path='/user/:id/edit' element={<EditUserPage />} />
+          <Route path='/user'>
+            <Route index element={<UserPage />} />
+            <Route path='add' element={<AddUserPage />} />
+            <Route path=':id/edit' element={<EditUserPage />} />
+          </Route>
+
           {/* Booking */}
-          <Route path='/booking' element={<BookingPage />} />
-          <Route path='/booking/add' element={<AddBookingPage />} />
-          <Route path='/booking/:id/edit' element={<EditBookingPage />} />
+          <Route path='/booking'>
+            <Route index element={<BookingPage />} />
+            <Route path='add' element={<AddBookingPage />} />
+            <Route path=':id/edit' element={<EditBookingPage />} />
+          </Route>
         </Route>
       </Route>
     </Routes>

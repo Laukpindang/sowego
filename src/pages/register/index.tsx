@@ -50,7 +50,7 @@ const Register = () => {
           username: data.user.displayName ?? '',
           photo: data.user.photoURL ?? ''
         })
-        navigate('/', { replace: true })
+        navigate('/destination', { replace: true })
         return `Welcome ${data.user.displayName ? data.user.displayName : ''}`
       },
       error: 'Register failed'

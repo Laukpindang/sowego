@@ -84,7 +84,7 @@ const EditDestinationPage = () => {
       <Header title='Edit Destination' />
       <div className='flex flex-col gap-4 p-4'>
         <div className='flex items-center gap-2 text-xl'>
-          <ArrowLeftIcon onClick={() => navigate('/')} />
+          <ArrowLeftIcon onClick={() => navigate('/destination')} />
           Edit Destination
         </div>
         <Form {...form}>

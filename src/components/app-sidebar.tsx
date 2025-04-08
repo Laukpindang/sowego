@@ -18,7 +18,7 @@ import {
 const data = [
   {
     title: 'Manage Destination',
-    url: '/'
+    url: '/destination'
   },
   {
     title: 'Manage Vacation Plan',
@@ -43,7 +43,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size='lg' asChild>
-              <Link to='/' onClick={() => setOpenMobile(false)}>
+              <Link to='/destination' onClick={() => setOpenMobile(false)}>
                 <div className='text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg bg-white'>
                   <img src='/sowego-icon.svg' alt='SOWEGO' />
                 </div>
