@@ -30,15 +30,15 @@ import {
   PaginationLink
 } from '@/components/ui/pagination'
 import {
-  Drawer,
-  DrawerClose,
-  DrawerContent,
-  DrawerDescription,
-  DrawerFooter,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerTrigger
-} from '@/components/ui/drawer'
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger
+} from '@/components/ui/dialog'
 
 import { ArrowUpDown, ChevronsLeftIcon, ChevronLeftIcon, ChevronRightIcon, ChevronsRightIcon } from 'lucide-react'
 
@@ -111,34 +111,34 @@ function DestinationPage() {
         header: 'Action',
         cell: ({ row }) => {
           return (
-            <Drawer>
+            <Dialog>
               <div className='flex items-center gap-2'>
                 <Button asChild>
                   <Link to={`/destination/${row.original.id}/edit`}>Edit</Link>
                 </Button>
-                <DrawerTrigger asChild>
+                <DialogTrigger asChild>
                   <Button variant='destructive'>Delete</Button>
-                </DrawerTrigger>
+                </DialogTrigger>
               </div>
-              <DrawerContent>
+              <DialogContent>
                 <div className='mx-auto w-full max-w-sm'>
-                  <DrawerHeader>
-                    <DrawerTitle>Are you sure to delete this destination?</DrawerTitle>
-                    <DrawerDescription>This action cannot be undone</DrawerDescription>
-                  </DrawerHeader>
-                  <DrawerFooter>
-                    <DrawerClose asChild>
+                  <DialogHeader>
+                    <DialogTitle>Are you sure to delete this destination?</DialogTitle>
+                    <DialogDescription>This action cannot be undone</DialogDescription>
+                  </DialogHeader>
+                  <DialogFooter>
+                    <DialogClose asChild>
+                      <Button variant='outline'>Cancel</Button>
+                    </DialogClose>
+                    <DialogClose asChild>
                       <Button variant='destructive' onClick={() => deleteData(row.original.id)}>
                         Delete
                       </Button>
-                    </DrawerClose>
-                    <DrawerClose asChild>
-                      <Button variant='outline'>Cancel</Button>
-                    </DrawerClose>
-                  </DrawerFooter>
+                    </DialogClose>
+                  </DialogFooter>
                 </div>
-              </DrawerContent>
-            </Drawer>
+              </DialogContent>
+            </Dialog>
           )
         }
       }
