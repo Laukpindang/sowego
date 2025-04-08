@@ -1,5 +1,4 @@
-import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router'
+import { useEffect, useState, useMemo, useCallback } from 'react'
 import {
   useReactTable,
   getCoreRowModel,
@@ -12,8 +11,9 @@ import {
   type ColumnFiltersState,
   type PaginationState
 } from '@tanstack/react-table'
+import { toast } from 'sonner'
 
-import { getVacations } from '@/firebase/services/vacation'
+import { deleteVacation, getVacations } from '@/firebase/services/vacation'
 import { usePagination } from '@/hooks/use-pagination'
 
 import { Link } from 'react-router'
@@ -33,77 +33,116 @@ import {
 import { ArrowUpDown, ChevronsLeftIcon, ChevronLeftIcon, ChevronRightIcon, ChevronsRightIcon } from 'lucide-react'
 
 import type { Vacation } from '@/types/Vacation'
-
-const columns: ColumnDef<Vacation>[] = [
-  {
-    accessorKey: 'city',
-    header: ({ column }) => (
-      <Button variant='ghost' onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
-        City
-        <ArrowUpDown className='ml-2 h-4 w-4' />
-      </Button>
-    )
-  },
-  {
-    accessorKey: 'price',
-    header: ({ column }) => (
-      <Button variant='ghost' onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
-        Price
-        <ArrowUpDown className='ml-2 h-4 w-4' />
-      </Button>
-    )
-  },
-  {
-    accessorKey: 'day_trip',
-    header: ({ column }) => (
-      <Button variant='ghost' onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
-        Day Trip
-        <ArrowUpDown className='ml-2 h-4 w-4' />
-      </Button>
-    )
-  },
-  {
-    accessorKey: 'country',
-    header: ({ column }) => (
-      <Button variant='ghost' onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
-        Country
-        <ArrowUpDown className='ml-2 h-4 w-4' />
-      </Button>
-    )
-  },
-  {
-    accessorKey: 'rating',
-    header: ({ column }) => (
-      <Button variant='ghost' onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
-        Rating
-        <ArrowUpDown className='ml-2 h-4 w-4' />
-      </Button>
-    )
-  },
-  {
-    accessorKey: 'quota',
-    header: ({ column }) => (
-      <Button variant='ghost' onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
-        Quota
-        <ArrowUpDown className='ml-2 h-4 w-4' />
-      </Button>
-    )
-  },
-  {
-    accessorKey: 'id',
-    header: 'Action',
-    cell: ({ row }) => {
-      const navigate = useNavigate()
-      return <Button onClick={() => navigate(`/vacation/${row.original.id}/edit`)}>Edit</Button>
-    }
-  }
-]
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger
+} from '@/components/ui/dialog'
 
 function VacationPage() {
   const [vacationData, setVacationData] = useState<Vacation[]>([])
   const [sorting, setSorting] = useState<SortingState>([])
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
   const [pagination, setPagination] = useState<PaginationState>({ pageIndex: 0, pageSize: 10 })
+
+  const columns: ColumnDef<Vacation>[] = useMemo(
+    () => [
+      {
+        accessorKey: 'city',
+        header: ({ column }) => (
+          <Button variant='ghost' onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
+            City
+            <ArrowUpDown className='ml-2 h-4 w-4' />
+          </Button>
+        )
+      },
+      {
+        accessorKey: 'price',
+        header: ({ column }) => (
+          <Button variant='ghost' onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
+            Price
+            <ArrowUpDown className='ml-2 h-4 w-4' />
+          </Button>
+        )
+      },
+      {
+        accessorKey: 'day_trip',
+        header: ({ column }) => (
+          <Button variant='ghost' onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
+            Day Trip
+            <ArrowUpDown className='ml-2 h-4 w-4' />
+          </Button>
+        )
+      },
+      {
+        accessorKey: 'country',
+        header: ({ column }) => (
+          <Button variant='ghost' onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
+            Country
+            <ArrowUpDown className='ml-2 h-4 w-4' />
+          </Button>
+        )
+      },
+      {
+        accessorKey: 'rating',
+        header: ({ column }) => (
+          <Button variant='ghost' onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
+            Rating
+            <ArrowUpDown className='ml-2 h-4 w-4' />
+          </Button>
+        )
+      },
+      {
+        accessorKey: 'quota',
+        header: ({ column }) => (
+          <Button variant='ghost' onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
+            Quota
+            <ArrowUpDown className='ml-2 h-4 w-4' />
+          </Button>
+        )
+      },
+      {
+        accessorKey: 'id',
+        header: 'Action',
+        cell: ({ row }) => (
+          <Dialog>
+            <div className='flex items-center gap-2'>
+              <Button asChild>
+                <Link to={`/destination/${row.original.id}/edit`}>Edit</Link>
+              </Button>
+              <DialogTrigger asChild>
+                <Button variant='destructive'>Delete</Button>
+              </DialogTrigger>
+            </div>
+            <DialogContent>
+              <div className='mx-auto w-full max-w-sm'>
+                <DialogHeader>
+                  <DialogTitle>Are you sure to delete this destination?</DialogTitle>
+                  <DialogDescription>This action cannot be undone</DialogDescription>
+                </DialogHeader>
+                <DialogFooter>
+                  <DialogClose asChild>
+                    <Button variant='outline'>Cancel</Button>
+                  </DialogClose>
+                  <DialogClose asChild>
+                    <Button variant='destructive' onClick={() => deleteData(row.original.id)}>
+                      Delete
+                    </Button>
+                  </DialogClose>
+                </DialogFooter>
+              </div>
+            </DialogContent>
+          </Dialog>
+        )
+      }
+    ],
+    []
+  )
 
   const table = useReactTable({
     columns,
@@ -120,8 +159,21 @@ function VacationPage() {
 
   const { range, first, last, next, previous, setPage, active } = usePagination({ total: table.getPageCount() })
 
-  useEffect(() => {
+  const fetchData = useCallback(() => {
     getVacations().then(res => setVacationData(res))
+  }, [])
+
+  const deleteData = useCallback(async (id: string) => {
+    toast.promise(() => deleteVacation(id), {
+      loading: 'Deleting data...',
+      success: 'Success delete data',
+      error: 'Failed delete data',
+      finally: () => fetchData()
+    })
+  }, [])
+
+  useEffect(() => {
+    fetchData()
   }, [])
 
   return (

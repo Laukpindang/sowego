@@ -1,4 +1,4 @@
-import { getFirestore, getDocs, getDoc, collection, doc, addDoc, updateDoc } from 'firebase/firestore'
+import { getFirestore, getDocs, getDoc, collection, doc, addDoc, updateDoc, deleteDoc } from 'firebase/firestore'
 
 import app from '@/firebase/config'
 
@@ -43,6 +43,14 @@ export const createUser = async (data: Omit<User, 'id'>) => {
 export const editUser = async (id: string, data: Omit<User, 'id'>) => {
   try {
     await updateDoc(doc(db, 'user', id), data)
+  } catch (error) {
+    throw new Error(JSON.stringify(error, null, 2))
+  }
+}
+
+export const deleteUser = async (id: string) => {
+  try {
+    await deleteDoc(doc(db, 'user', id))
   } catch (error) {
     throw new Error(JSON.stringify(error, null, 2))
   }

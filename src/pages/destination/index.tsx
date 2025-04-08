@@ -123,7 +123,7 @@ function DestinationPage() {
               <DialogContent>
                 <div className='mx-auto w-full max-w-sm'>
                   <DialogHeader>
-                    <DialogTitle>Are you sure to delete this destination?</DialogTitle>
+                    <DialogTitle>Are you sure to delete this data?</DialogTitle>
                     <DialogDescription>This action cannot be undone</DialogDescription>
                   </DialogHeader>
                   <DialogFooter>

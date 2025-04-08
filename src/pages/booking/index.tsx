@@ -1,5 +1,4 @@
-import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import {
   useReactTable,
   getCoreRowModel,
@@ -12,8 +11,9 @@ import {
   type ColumnFiltersState,
   type PaginationState
 } from '@tanstack/react-table'
+import { toast } from 'sonner'
 
-import { getBookings } from '@/firebase/services/booking'
+import { deleteBooking, getBookings } from '@/firebase/services/booking'
 import { usePagination } from '@/hooks/use-pagination'
 
 import { Link } from 'react-router'
@@ -29,54 +29,93 @@ import {
   PaginationItem,
   PaginationLink
 } from '@/components/ui/pagination'
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger
+} from '@/components/ui/dialog'
 
 import { ArrowUpDown, ChevronsLeftIcon, ChevronLeftIcon, ChevronRightIcon, ChevronsRightIcon } from 'lucide-react'
 
 import type { Booking } from '@/types/Booking'
-
-const columns: ColumnDef<Booking>[] = [
-  {
-    accessorKey: 'name',
-    header: ({ column }) => (
-      <Button variant='ghost' onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
-        Name
-        <ArrowUpDown className='ml-2 h-4 w-4' />
-      </Button>
-    )
-  },
-  {
-    accessorKey: 'phone_number',
-    header: ({ column }) => (
-      <Button variant='ghost' onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
-        Phone Number
-        <ArrowUpDown className='ml-2 h-4 w-4' />
-      </Button>
-    )
-  },
-  {
-    accessorKey: 'destination',
-    header: ({ column }) => (
-      <Button variant='ghost' onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
-        Destination
-        <ArrowUpDown className='ml-2 h-4 w-4' />
-      </Button>
-    )
-  },
-  {
-    accessorKey: 'id',
-    header: 'Action',
-    cell: ({ row }) => {
-      const navigate = useNavigate()
-      return <Button onClick={() => navigate(`/booking/${row.original.id}/edit`)}>Edit</Button>
-    }
-  }
-]
 
 function BookingPage() {
   const [bookingData, setBookingData] = useState<Booking[]>([])
   const [sorting, setSorting] = useState<SortingState>([])
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
   const [pagination, setPagination] = useState<PaginationState>({ pageIndex: 0, pageSize: 10 })
+
+  const columns: ColumnDef<Booking>[] = useMemo(
+    () => [
+      {
+        accessorKey: 'name',
+        header: ({ column }) => (
+          <Button variant='ghost' onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
+            Name
+            <ArrowUpDown className='ml-2 h-4 w-4' />
+          </Button>
+        )
+      },
+      {
+        accessorKey: 'phone_number',
+        header: ({ column }) => (
+          <Button variant='ghost' onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
+            Phone Number
+            <ArrowUpDown className='ml-2 h-4 w-4' />
+          </Button>
+        )
+      },
+      {
+        accessorKey: 'destination',
+        header: ({ column }) => (
+          <Button variant='ghost' onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
+            Destination
+            <ArrowUpDown className='ml-2 h-4 w-4' />
+          </Button>
+        )
+      },
+      {
+        accessorKey: 'id',
+        header: 'Action',
+        cell: ({ row }) => (
+          <Dialog>
+            <div className='flex items-center gap-2'>
+              <Button asChild>
+                <Link to={`/destination/${row.original.id}/edit`}>Edit</Link>
+              </Button>
+              <DialogTrigger asChild>
+                <Button variant='destructive'>Delete</Button>
+              </DialogTrigger>
+            </div>
+            <DialogContent>
+              <div className='mx-auto w-full max-w-sm'>
+                <DialogHeader>
+                  <DialogTitle>Are you sure to delete this data?</DialogTitle>
+                  <DialogDescription>This action cannot be undone</DialogDescription>
+                </DialogHeader>
+                <DialogFooter>
+                  <DialogClose asChild>
+                    <Button variant='outline'>Cancel</Button>
+                  </DialogClose>
+                  <DialogClose asChild>
+                    <Button variant='destructive' onClick={() => deleteData(row.original.id)}>
+                      Delete
+                    </Button>
+                  </DialogClose>
+                </DialogFooter>
+              </div>
+            </DialogContent>
+          </Dialog>
+        )
+      }
+    ],
+    []
+  )
 
   const table = useReactTable({
     columns,
@@ -93,8 +132,21 @@ function BookingPage() {
 
   const { range, first, last, next, previous, setPage, active } = usePagination({ total: table.getPageCount() })
 
-  useEffect(() => {
+  const fetchData = useCallback(() => {
     getBookings().then(res => setBookingData(res))
+  }, [])
+
+  const deleteData = useCallback(async (id: string) => {
+    toast.promise(() => deleteBooking(id), {
+      loading: 'Deleting data...',
+      success: 'Success delete data',
+      error: 'Failed delete data',
+      finally: () => fetchData()
+    })
+  }, [])
+
+  useEffect(() => {
+    fetchData()
   }, [])
 
   return (
