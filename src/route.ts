@@ -34,6 +34,17 @@ const router = createBrowserRouter([
     // Layout for auth & theme
     Component: MainLayout,
     children: [
+      // Login & Register does not have sidebar
+      {
+        // Login
+        path: '/auth/login',
+        Component: Login
+      },
+      {
+        // Register
+        path: '/auth/register',
+        Component: Register
+      },
       {
         // Layout for main app with sidebar
         Component: AuthLayout,
@@ -111,17 +122,6 @@ const router = createBrowserRouter([
             ]
           }
         ]
-      },
-      // Login & Register does not have sidebar
-      {
-        // Login
-        path: 'auth/login',
-        Component: Login
-      },
-      {
-        // Register
-        path: 'auth/register',
-        Component: Register
       }
     ]
   }
