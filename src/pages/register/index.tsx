@@ -3,6 +3,7 @@ import z from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { toast } from 'sonner'
 import { Link, useNavigate } from 'react-router'
+import { useState } from 'react'
 
 import { register } from '@/firebase/auth'
 import { useAuth } from '@/context/auth-context'
@@ -10,6 +11,8 @@ import { useAuth } from '@/context/auth-context'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
+
+import { EyeIcon, EyeOffIcon } from 'lucide-react'
 
 const schema = z
   .object({
@@ -27,6 +30,8 @@ const schema = z
 type Schema = z.infer<typeof schema>
 
 const Register = () => {
+  const [showPassword, setShowPassword] = useState(false)
+
   const form = useForm<Schema>({
     resolver: zodResolver(schema),
     defaultValues: {
@@ -81,9 +86,19 @@ const Register = () => {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Password</FormLabel>
-                <FormControl>
-                  <Input type='password' {...field} />
-                </FormControl>
+                <div className='relative'>
+                  <FormControl>
+                    <Input type={showPassword ? 'text' : 'password'} {...field} />
+                  </FormControl>
+                  <button
+                    type='button'
+                    onClick={() => setShowPassword(!showPassword)}
+                    className='absolute top-1/2 right-3 -translate-y-1/2 cursor-pointer text-gray-500 hover:text-gray-700'
+                    aria-label={showPassword ? 'Hide password' : 'Show password'}
+                  >
+                    {showPassword ? <EyeOffIcon className='h-5 w-5' /> : <EyeIcon className='h-5 w-5' />}
+                  </button>
+                </div>
                 <FormMessage />
               </FormItem>
             )}
